@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [main]      # runs on push to main
+  pull_request:           # runs on every PR
+  workflow_dispatch:      # adds a "Run workflow" button -N
+
+jobs:
+  build: #N
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v4 #
+
+      - name: Show info
+        run: |
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+
+      - name: Build image
+        run: docker build -t gha-lab:${{ github.sha }} .
+
+  test:
+    needs: build          # waits for build to pass
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fake test
+        run: echo "Tests would run here"
